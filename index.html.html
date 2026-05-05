@@ -7,324 +7,852 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
- margin:0;
- font-family:Arial,sans-serif;
- color:white;
- text-align:center;
- min-height:100vh;
- background:#000;
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:white;
+  text-align:center;
+  min-height:100vh;
+  background:#000;
 }
 
-/* ISTANBUL BACKGROUND */
-.bg-istanbul{
- position:fixed;
- inset:0;
- background:url("images/istanbul.png") center/cover no-repeat;
- z-index:-2;
-}
-.bg-overlay{
- position:fixed;
- inset:0;
- background:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,.9));
- z-index:-1;
+.bg{
+  position:fixed;
+  inset:0;
+  background:url("images/istanbul.png") center/cover no-repeat;
+  z-index:-3;
 }
 
-/* SCREEN */
-.screen{display:none;min-height:100vh;padding:24px}
-.active{display:flex;flex-direction:column;justify-content:center}
-
-/* BUTTON */
-button{
- padding:14px 18px;
- margin:10px;
- border:none;
- border-radius:16px;
- font-size:15px;
- font-weight:800;
- background:#ffcc00;
- color:#111;
- cursor:pointer;
+.overlay{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at top,rgba(38,49,92,.35),rgba(0,0,0,.95)),
+    linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.95));
+  z-index:-2;
 }
-.dark-btn{background:#1f2538;color:white}
 
-/* CINEMATIC */
-.cinematic{
- max-width:700px;
- margin:auto;
- padding:32px;
- border-radius:30px;
- background:rgba(0,0,0,.55);
- backdrop-filter:blur(10px);
- border:1px solid rgba(255,255,255,.1);
+.screen{
+  display:none;
+  min-height:100vh;
+  padding:24px;
+}
+
+.active{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.cinematic,.mission,.result-card{
+  max-width:720px;
+  margin:0 auto;
+  padding:28px;
+  border-radius:30px;
+  background:rgba(0,0,0,.58);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,204,0,.24);
+  box-shadow:0 0 55px rgba(255,204,0,.16);
+  animation:popIn .45s ease;
 }
 
 .warning{
- color:#ffcc00;
- font-weight:900;
- letter-spacing:2px;
- margin-bottom:10px;
+  color:#ffcc00;
+  font-weight:900;
+  letter-spacing:2px;
 }
 
-h1{
- font-size:38px;
- margin:10px 0;
-}
-
+h1{font-size:40px;margin:10px 0}
+h2{font-size:27px}
 p{line-height:1.6}
 
-/* CHARACTER GRID */
+button{
+  padding:14px 18px;
+  margin:10px;
+  border:none;
+  border-radius:16px;
+  font-size:15px;
+  font-weight:900;
+  background:#ffcc00;
+  color:#111;
+  cursor:pointer;
+}
+
+button:disabled{opacity:.65;cursor:not-allowed}
+
+.dark-btn{
+  background:#1f2538;
+  color:white;
+  border:1px solid rgba(255,255,255,.22);
+}
+
+.help-btn{
+  background:#7ee7ff;
+  color:#06131a;
+}
+
 .grid{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:14px;
- max-width:700px;
- margin:auto;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  max-width:760px;
+  margin:20px auto;
 }
 
 .card{
- background:rgba(255,255,255,.08);
- border-radius:22px;
- padding:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.04));
+  border:1px solid rgba(255,204,0,.25);
+  border-radius:24px;
+  padding:18px 12px;
+  box-shadow:0 0 25px rgba(255,204,0,.12);
+  animation:popIn .45s ease;
 }
 
-.face img{
- width:90px;height:90px;border-radius:50%;
+.face{
+  width:96px;
+  height:96px;
+  margin:0 auto 10px;
+  border-radius:50%;
+  overflow:hidden;
+  box-shadow:0 0 28px rgba(255,204,0,.38);
+  background:#111;
 }
 
-/* GAME */
+.face img,.result-img,.helper-face img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.card b{
+  display:block;
+  font-size:20px;
+  margin-bottom:6px;
+}
+
+.card small{color:#ddd}
+
 .topbar{
- position:fixed;
- top:0;left:0;right:0;
- display:flex;
- justify-content:space-between;
- padding:12px;
- background:rgba(0,0,0,.7);
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-between;
+  padding:14px 18px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(8px);
+  font-weight:900;
+  z-index:20;
 }
 
 .options button{
- width:100%;
- max-width:500px;
- display:block;
- margin:10px auto;
+  display:block;
+  width:100%;
+  max-width:540px;
+  margin:12px auto;
+  transition:.25s;
 }
 
-.correct-btn{background:#17c964!important}
-.wrong-btn{background:#ff4d4d!important}
+.correct-btn{
+  background:#17c964!important;
+  color:#06130b!important;
+  transform:scale(1.03);
+}
 
-/* HELPER */
+.wrong-btn{
+  background:#ff4d4d!important;
+  color:white!important;
+  transform:scale(.98);
+}
+
+.power{
+  color:#ffcc00;
+  font-weight:900;
+}
+
+.feedback{
+  position:fixed;
+  left:50%;
+  top:80px;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.85);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:18px;
+  padding:12px 18px;
+  font-weight:900;
+  display:none;
+  z-index:80;
+}
+
+.feedback.show{
+  display:block;
+  animation:slideDown .35s ease;
+}
+
 .helper-overlay{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.8);
- display:none;
- align-items:center;
- justify-content:center;
-}
-.helper-box{
- background:#111;
- padding:30px;
- border-radius:20px;
-}
-.helper-box img{
- width:120px;
- height:120px;
- border-radius:50%;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.76);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:60;
+  padding:20px;
 }
 
-/* RESULT */
+.helper-box{
+  max-width:460px;
+  width:100%;
+  padding:28px;
+  border-radius:30px;
+  background:linear-gradient(180deg,#1b2440,#070812);
+  border:1px solid rgba(255,204,0,.42);
+  box-shadow:0 0 55px rgba(255,204,0,.25);
+  animation:popIn .42s ease;
+}
+
+.helper-face{
+  width:122px;
+  height:122px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  overflow:hidden;
+  box-shadow:0 0 28px rgba(255,204,0,.42);
+  animation:float 1.4s infinite ease-in-out;
+}
+
+.helper-name{
+  color:#ffcc00;
+  font-size:22px;
+  font-weight:900;
+}
+
 .result-img{
- width:110px;height:110px;border-radius:50%;
+  width:115px;
+  height:115px;
+  border-radius:50%;
+  box-shadow:0 0 28px rgba(255,204,0,.4);
+}
+
+.badge{font-size:72px}
+
+.stats,.gift-panel,.leaderboard{
+  margin-top:18px;
+  padding:14px;
+  border-radius:18px;
+  background:rgba(0,0,0,.38);
+  font-size:14px;
+}
+
+.leader-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+input{
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  margin:10px;
+  width:85%;
+  max-width:360px;
+  text-align:center;
+  font-weight:900;
+}
+
+@keyframes popIn{
+  from{opacity:0;transform:scale(.82) translateY(28px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+@keyframes slideDown{
+  from{opacity:0;top:40px}
+  to{opacity:1;top:80px}
 }
 
 @media(max-width:430px){
- .grid{grid-template-columns:1fr}
- h1{font-size:28px}
+  .grid{grid-template-columns:1fr}
+  h1{font-size:30px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg-istanbul"></div>
-<div class="bg-overlay"></div>
+<div class="bg"></div>
+<div class="overlay"></div>
+<div id="feedback" class="feedback"></div>
 
-<!-- LANDING -->
-<div id="landing" class="screen active">
- <div class="cinematic">
-  <div class="warning">OPERASYON BAŞLIYOR</div>
-  <h1>EFSANELER TAKIMI</h1>
-  <p>
-   İstanbul’da tarihi eserler tehlikede.<br>
-   Terlik görünmezlik gücünü kullandı.<br>
-   Takım seni bekliyor.
-  </p>
-  <button onclick="go('character')">GÖREVE BAŞLA</button>
- </div>
-</div>
-
-<!-- CHARACTER -->
-<div id="character" class="screen">
- <h2>Karakterini Seç</h2>
- <div id="grid" class="grid"></div>
-</div>
-
-<!-- CHARACTER DETAIL -->
-<div id="charDetail" class="screen">
- <div class="cinematic">
-  <div id="charInfo"></div>
-  <button onclick="startGame()">OYUNA DEVAM ET</button>
-  <button class="dark-btn" onclick="go('character')">GERİ</button>
- </div>
-</div>
-
-<!-- GAME -->
-<div id="game" class="screen">
- <div class="topbar">
-  <div>⏱ <span id="time">20</span></div>
-  <div>⭐ <span id="score">0</span></div>
- </div>
-
- <div class="cinematic">
-  <h2 id="taskTitle"></h2>
-  <p id="taskDesc"></p>
-  <div id="help"></div>
-  <div id="options" class="options"></div>
- </div>
-</div>
-
-<!-- RESULT -->
-<div id="result" class="screen">
- <div class="cinematic">
-  <h2>SONUÇ</h2>
-  <div id="charRes"></div>
-  <p id="finalScore"></p>
-
-  <h3>🎁 Ödüller</h3>
-  <p>1. Sinema bileti<br>2. Afiş<br>3. Karakter kartı</p>
-
-  <button onclick="restart()">TEKRAR OYNA</button>
- </div>
-</div>
-
-<!-- HELPER -->
 <div id="helperOverlay" class="helper-overlay">
- <div class="helper-box">
-  <img id="helperImg">
-  <p id="helperText"></p>
-  <button onclick="closeHelper()">KAPAT</button>
- </div>
+  <div class="helper-box">
+    <div id="helperFace" class="helper-face"></div>
+    <div id="helperName" class="helper-name"></div>
+    <p id="helperMessage"></p>
+    <button onclick="closeHelper()">TAMAM</button>
+  </div>
+</div>
+
+<div id="landing" class="screen active">
+  <div class="cinematic">
+    <p class="warning">OPERASYON BAŞLIYOR</p>
+    <h1>EFSANELER TAKIMI</h1>
+    <p>
+      İstanbul’da tarihi eserler tehlikede.<br>
+      Terlik görünmezlik gücünü kullandı.<br>
+      Efsaneler Takımı seni göreve çağırıyor.
+    </p>
+    <div class="stats">
+      <div>🎮 Bu cihazda oynama: <span id="playCountLanding">0</span></div>
+      <div>🏆 En yüksek skor: <span id="bestScoreLanding">0</span></div>
+    </div>
+    <button onclick="go('intro')">GÖREVE BAŞLA</button>
+    <button class="dark-btn" onclick="showLeaderboardOnly()">ÖDÜL VE SIRALAMA</button>
+  </div>
+</div>
+
+<div id="intro" class="screen">
+  <div class="cinematic">
+    <p class="warning">TERLİK’İN PLANI</p>
+    <h2>Görünmez düşman harekete geçti.</h2>
+    <p>
+      Sahte eserler yerleştirildi.<br>
+      Kamyonlar yola çıkmak üzere.<br>
+      Her karakterin kendi görevi, kendi gücü ve kendi sınavı var.
+    </p>
+    <button onclick="go('character')">TAKIMA KATIL</button>
+    <button class="dark-btn" onclick="go('landing')">GERİ DÖN</button>
+  </div>
+</div>
+
+<div id="character" class="screen">
+  <h2>Karakterini Seç</h2>
+  <p>Her karakterin özel gücü ve özel soru havuzu var.</p>
+  <div id="characterGrid" class="grid"></div>
+</div>
+
+<div id="characterDetail" class="screen">
+  <div class="cinematic">
+    <div id="characterDetailContent"></div>
+    <button onclick="toggleCharacterInfo()">KARAKTERİ TANI</button>
+    <button onclick="startGame()">OYUNA DEVAM ET</button>
+    <button class="dark-btn" onclick="go('character')">GERİ DÖN</button>
+  </div>
+</div>
+
+<div id="game" class="screen">
+  <div class="topbar">
+    <div>⏱ <span id="time">20</span></div>
+    <div>⭐ <span id="score">0</span></div>
+  </div>
+
+  <div class="mission">
+    <p class="power" id="powerText"></p>
+    <h2 id="taskTitle"></h2>
+    <p id="taskDesc"></p>
+    <div id="helpArea"></div>
+    <div id="options" class="options"></div>
+  </div>
+</div>
+
+<div id="result" class="screen">
+  <div class="result-card">
+    <div class="badge" id="badge">🏆</div>
+    <h2 id="resultText"></h2>
+    <div id="charText"></div>
+    <p id="levelText"></p>
+    <p id="powerResult"></p>
+    <p id="finalScore"></p>
+
+    <input id="playerName" placeholder="Adını yaz, sıralamaya gir">
+    <button onclick="savePlayerScore()">SKORU KAYDET</button>
+
+    <div class="gift-panel">
+      <b>🎁 Ödül Paneli</b><br>
+      1. sıra: Sinema bileti<br>
+      2. sıra: İmzalı afiş<br>
+      3. sıra: Karakter kartı seti
+    </div>
+
+    <div class="stats">
+      <div>🎮 Toplam oynama: <span id="playCountResult">0</span></div>
+      <div>🏆 En yüksek skor: <span id="bestScoreResult">0</span></div>
+      <div>🐾 Son karakter: <span id="lastCharacterResult">-</span></div>
+    </div>
+
+    <div id="leaderboard" class="leaderboard"></div>
+
+    <button onclick="share()">PAYLAŞ</button>
+    <button onclick="restart()">TEKRAR OYNA</button>
+  </div>
 </div>
 
 <script>
 const characters=[
-{key:"kangal",name:"Kangal",img:"kangal",info:"Sivaslı. Güçlü lider. Takımı korur."},
-{key:"pisi",name:"Pişi",img:"pisi",info:"Karamanlı. Saf ama sezgisel."},
-{key:"firfir",name:"Fırfır",img:"firfir",info:"Denizli. Disiplinli."},
-{key:"simit",name:"Simit",img:"simit",info:"Ankara. İnatçı."},
-{key:"kasirga",name:"Kasırga",img:"kasirga",info:"Erzurum. Sessiz avcı."},
-{key:"ustat",name:"Üstat",img:"ustat",info:"Bilge lider."},
-{key:"sutlac",name:"Sütlaç",img:"sutlac",info:"Van kedisi."},
-{key:"cankus",name:"Cankuş",img:"cankus",info:"Kartal. Gözlemci."}
+{key:"kangal",name:"Kangal",img:"kangal",origin:"Sivas",power:"Her görevde +5 saniye",role:"Takım lideri ve koruyucu güç."},
+{key:"pisi",name:"Pişi",img:"pisi",origin:"Karaman",power:"1 yanlış cevabı affeder",role:"Takımın kalbi ve masum enerjisi."},
+{key:"firfir",name:"Fırfır",img:"firfir",origin:"Denizli",power:"+5 başlangıç puanı",role:"Disiplin, düzen ve alarm gücü."},
+{key:"simit",name:"Simit",img:"simit",origin:"Ankara",power:"Yanlışta puan kaybını azaltır",role:"İnatçı, komik ve pratik çözümcü."},
+{key:"kasirga",name:"Kasırga",img:"kasirga",origin:"Erzurum",power:"Doğru cevapta ekstra skor",role:"Sessiz savaşçı ve dağların avcısı."},
+{key:"ustat",name:"Üstat",img:"ustat",origin:"İztuzu / Muğla",power:"Bilgelik sorularında bonus",role:"Mentor, akıl ve sabır kaynağı."},
+{key:"sutlac",name:"Sütlaç",img:"sutlac",origin:"Van",power:"Şifre görevinde bonus",role:"Kilit açma ve detay uzmanı."},
+{key:"cankus",name:"Cankuş",img:"cankus",origin:"Anadolu",power:"İz ve gözlem görevinde bonus",role:"Hava istihbaratı ve gizli kahraman."}
 ];
 
-let selectedChar;
-let score=0,time=20,timer,questions=[],index=0;
+let characterKey="",characterName="",imageName="",score=0,time=20,timer,taskIndex=0,currentTasks=[],currentTask=null,answered=false,mistakeShield=false,finalLevel="",infoOpen=false;
 
-/* BASİT RANDOM SORU */
-function generateQuestions(){
-let base=[
-{q:"Doğru karar?",a:"Plan yapmak",w:["Kaçmak","Bağırmak","Beklemek"]},
-{q:"En iyi hamle?",a:"Takımla hareket",w:["Tek başına","Kaç","Saklan"]},
-{q:"Hangi yol?",a:"Orta yol",w:["Sol","Sağ","Tünel"]},
-{q:"Tehlike?",a:"İz takip",w:["Görmezden gel","Koş","Uy"]},
-{q:"Şifre?",a:"8271",w:["1234","0000","1453"]}
-];
-
-questions=[...base].sort(()=>Math.random()-0.5);
+function imgTag(name,cls=""){
+  return `<img class="${cls}" src="images/${name}.png" onerror="this.style.display='none'">`;
 }
 
-/* UI */
-function go(s){
-document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-document.getElementById(s).classList.add("active");
+function q(desc,correct,wrong,helper=null,msg=""){
+  return {desc,options:[{text:correct,correct:true},...wrong.map(x=>({text:x,correct:false}))],helper,msg};
 }
 
-function renderChars(){
-let g=document.getElementById("grid");
-characters.forEach(c=>{
-g.innerHTML+=`
-<div class="card">
-<img src="images/${c.img}.png">
-<b>${c.name}</b>
-<button onclick="selectChar('${c.key}')">Seç</button>
-</div>`;
-});
+const banks={
+kangal:[
+q("Sivas Kangalı hangi özelliğiyle bilinir?","Sürü koruma ve sadakat",["Uzun ötüş","Tiftik","Suda yaşama"],"tuana","Tuana: Kangal denince akla koruma ve sadakat gelir."),
+q("Kangal’ın takım içindeki rolü nedir?","Lider ve koruyucu",["Şifre kırıcı","Komik yardımcı","Hava gözcüsü"]),
+q("Tehlike görünmezse en mantıklı yöntem nedir?","İz ve ses takibi",["Rastgele koşmak","Beklemek","Bağırmak"],"akincan","Akıncan: Görünmez olan bile iz bırakır."),
+q("Pişi tehlikedeyse Kangal ne yapmalı?","Planlı kurtarma yapmalı",["Tek başına saldırmalı","Beklemeli","Terlik’e inanmalı"]),
+q("Sivas’ın sert iklimi Kangal’a ne kazandırır?","Dayanıklılık",["Görünmezlik","Uçuş","Şifre çözme"]),
+q("Liderin en önemli gücü nedir?","Takımı birlikte tutmak",["Tek başına savaşmak","Hızlı kaçmak","Saklanmak"]),
+q("Terlik sahte iz bıraktıysa ne yapılmalı?","Bilgi doğrulanmalı",["Hemen inanılmalı","İz silinmeli","Görev bırakılmalı"],"akincan","Akıncan: Kamera ve rota eşleşmiyorsa iz sahtedir."),
+q("Kangal’ın en büyük zaafı nedir?","Pişi’ye olan sevgisi",["Yükseklik","Su","Karanlık"]),
+q("Kamyonları durdurmak için en doğru lider hamlesi nedir?","Ekibi yollara bölmek",["Tek yolu kapatmak","Kaçmak","Beklemek"]),
+q("Kangal korku anında ne yapmalı?","Sakin kalmalı",["Paniklemeli","Bağırmalı","Görevi bırakmalı"]),
+q("Takım paniklediyse ilk komut ne olmalı?","Herkes görev yerine",["Herkes dağılsın","Kimse konuşmasın","Ben giderim"]),
+q("Gerçek cesaret nedir?","Korkarken doğruyu yapmak",["Hiç korkmamak","Bağırmak","Yalnız kalmak"]),
+q("Kangal neden güven verir?","Kararlı ve koruyucu olduğu için",["Çok konuştuğu için","Görünmez olduğu için","Şifre bildiği için"]),
+q("Terlik yakalanınca ne yapılmalı?","Polise teslim edilmeli",["Bırakılmalı","Saklanmalı","Ödül istenmeli"]),
+q("Kangal’ın operasyon başarısı neye bağlıdır?","Takım ruhuna",["Yalnızlığa","Tesadüfe","Kargaşaya"])
+],
+pisi:[
+q("Pişi hangi yöreyle ilişkilidir?","Karaman",["Van","Sivas","Denizli"]),
+q("Pişi’nin en belirgin özelliği nedir?","Saf ama sezgisel olması",["Kuralcı olması","Şifre kırması","Uçması"]),
+q("Biri Pişi’yi kandırmaya çalışırsa ne yapılmalı?","Kangal’a haber verilmeli",["Hemen inanılmalı","Yanına gidilmeli","Şifre verilmeli"]),
+q("Pişi’nin takım içindeki rolü nedir?","Takımın kalbi olmak",["Lider olmak","Hava gözcüsü olmak","Kilit açmak"]),
+q("Karaman koyunu hangi yaşamla ilişkilidir?","Bozkır ve sürü yaşamı",["Denizaltı","Buzul","Yağmur ormanı"]),
+q("Pişi kaybolursa en güvenli davranış nedir?","Olduğu yerde kalıp yardım istemek",["Koşmak","Saklanmak","Terlik’i aramak"]),
+q("Pişi en çok kime güvenir?","Kangal’a",["Terlik’e","Turşu’ya","Kimseye"]),
+q("Sahte arkadaş nasıl anlaşılır?","Davranışları sorgulanır",["Hemen inanılır","Hediye alınır","Kapı açılır"],"tuana","Tuana: İyi görünen herkes iyi değildir."),
+q("Pişi’nin riski nedir?","Kolay kandırılmak",["Çok hızlı olmak","Çok yaşlı olmak","Uçmak"]),
+q("Korkunca Pişi ne yapmalı?","Takımdan destek almalı",["Kaçmalı","Susmalı","Terlik’e gitmeli"]),
+q("Pişi’nin sezgisi ne işe yarar?","Tehlikeyi hissetmeye",["Kapı kırmaya","Uçmaya","Tiftik üretmeye"]),
+q("Pişi neden sevilir?","Masum ve iyi niyetli olduğu için",["Kurnaz olduğu için","Kötü olduğu için","Görünmez olduğu için"]),
+q("Pişi parlak sahte esere kanabilir mi?","Evet, ekip kontrol etmeli",["Asla hata yapmaz","Eseri yer","Uçar"]),
+q("Pişi’nin en büyük katkısı nedir?","Ekibi birleştirmesi",["Plan bozması","Uyuması","Kaçması"]),
+q("Pişi için doğru karar nasıl verilir?","Sezgi + takım desteğiyle",["Rastgele","Korkuyla","Terlik’e sorarak"])
+],
+firfir:[
+q("Denizli Horozu neyle bilinir?","Uzun ve güçlü ötüşü",["Tiftik","Suda yaşama","Sürü koruma"]),
+q("Fırfır’ın takım rolü nedir?","Düzen ve alarm gücü",["Şifre kırma","Kilit açma","Gizli uçuş"]),
+q("Denizli hangi doğal güzelliğiyle ünlüdür?","Pamukkale",["Nemrut","Uludağ","Erciyes"],"tuana","Tuana: Denizli deyince Pamukkale akla gelir."),
+q("Fırfır göreve nasıl başlar?","Düzen kurarak",["Dağıtarak","Uyuyarak","Şaka yaparak"]),
+q("Panik varsa Fırfır ne yapmalı?","Komutları net vermeli",["Bağırıp kaçmalı","Beklemeli","Kilit kırmalı"]),
+q("Fırfır’ın riski nedir?","Fazla kuralcı olması",["Çok sessiz olması","Görünmez olması","Saf olması"]),
+q("Fırfır’ın destek gücü kimlerdir?","Çiftlik ekibi",["Fareler","Balıklar","Robotlar"]),
+q("Nöbetçi uyursa ne olur?","Plan tehlikeye girer",["Skor artar","Terlik yardım eder","Eser çoğalır"]),
+q("Fırfır neden komiktir?","Her şeyi askerlik gibi ciddiye alır",["Hiç konuşmaz","Kedidir","Görünmezdir"]),
+q("Sahte emir gelirse ne yapılır?","Kaynak doğrulanır",["Hemen uyulur","Alkışlanır","Saklanılır"],"akincan","Akıncan: Ses taklit edilebilir. Kaynak kontrol edilmeli."),
+q("Fırfır’ın cesareti nereden gelir?","Düzen duygusundan",["Kargaşadan","Korkudan","Yalnızlıktan"]),
+q("Operasyon alarmını kim verebilir?","Fırfır",["Terlik","Turşu","Pişi"]),
+q("Fırfır’ın doğru hamlesi nedir?","Zamanı iyi yönetmek",["Rastgele hareket","Beklemek","Kaçmak"]),
+q("Fırfır için zafer nedir?","Görevin tertemiz tamamlanması",["Dağınıklık","Kaçış","Tesadüf"]),
+q("Denizli Horozu’nun sesi ekipte ne işe yarar?","Uyarı ve koordinasyon",["Şifre yazma","Tiftik yapma","Kilit açma"])
+],
+simit:[
+q("Ankara keçisi hangi ürünüyle bilinir?","Tiftik",["Bal","İpek","Mercan"]),
+q("Simit’in en belirgin özelliği nedir?","İnatçılık",["Sessizlik","Korkaklık","Uçmak"]),
+q("Ankara hangi bölgededir?","İç Anadolu",["Karadeniz","Akdeniz","Ege"],"tuana","Tuana: Ankara, İç Anadolu’nun merkezindedir."),
+q("Simit’in göreve katkısı nedir?","Pratik çözüm üretmek",["Hava takibi","Şifre kırmak","Sessiz kalmak"]),
+q("Simit çok konuşursa ne olur?","Ekip zaman kaybedebilir",["Kapı açılır","Terlik uyur","Şifre çözülür"]),
+q("Kamyonu durdurmak için ne kullanılabilir?","Traktör",["Balon","Gemi","Uçak"]),
+q("Simit’in riski nedir?","Kendini fazla önemli sanması",["Çok az konuşması","Görünmez olması","Uçamaması"]),
+q("Yanlış rota varsa kimden konum alınır?","Akıncan",["Turşu","Terlik","Pişi"],"akincan","Akıncan: Harita doğru rotayı gösterir."),
+q("Tiftik hangi hayvanla ilişkilidir?","Ankara keçisi",["Van kedisi","Denizli horozu","Kangal"]),
+q("Keçi zorlu arazide neden iyidir?","Dengeli ve inatçı olduğu için",["Görünmez olduğu için","Uçtuğu için","Suda yaşadığı için"]),
+q("Simit’in doğru planı nedir?","Az konuşup doğru hareket etmek",["Çok konuşmak","Bağırmak","Görevi unutmak"]),
+q("Düşmanı küçümsemek ne doğurur?","Hata",["Zafer","Şifre","Bonus"]),
+q("Simit’in komik gücü nedir?","Morali yükseltmek",["Korku yaymak","Eser çalmak","Terlik olmak"]),
+q("Traktör nerede işe yarar?","Yol kapamada",["Şifre çözmede","Uçmada","Yüzmede"]),
+q("Simit için en iyi zafer nedir?","İnatla doğru yerde durmak",["Kaçmak","Uyumak","Eseri saklamak"])
+],
+kasirga:[
+q("Kasırga hangi coğrafyayla ilişkilidir?","Erzurum’un dağları",["Van Gölü","Denizli Ovası","Ankara merkezi"]),
+q("Anadolu parsı neyle öne çıkar?","Gizlilik ve çeviklik",["Ötüş","Tiftik","Yüzme"]),
+q("Kasırga’nın riski nedir?","Yalnız hareket etmek",["Çok konuşmak","Kuralcılık","Saflık"]),
+q("Karlı zeminde ne takip edilir?","Pençe izi",["Boya izi","Tabela","Şifre sesi"]),
+q("Erzurum’un sert kışı ne kazandırır?","Dayanıklılık",["Görünmezlik","Şifre gücü","Tiftik"]),
+q("Kasırga hedefe nasıl yaklaşır?","Sessizce",["Bağırarak","Dans ederek","Uyuyarak"]),
+q("Kasırga’nın iç çatışması nedir?","Kangal’a duyduğu gizli his",["Terlik’e bağlılık","Sütlaç korkusu","Fırfır kıskançlığı"]),
+q("Pusu fark edilirse ne yapılmalı?","Takıma işaret verilmeli",["Tek başına saldırılmalı","Beklenmeli","Uyulmalı"]),
+q("Dağda yön bulmak için ne önemlidir?","İz ve rüzgar",["Neon tabela","Asansör","Sahil çizgisi"],"ustat","Üstat: Dağda yol, iz ve rüzgarın dilini okuyana görünür."),
+q("Görünmez düşman dağda nasıl bulunur?","Bozulan kar izinden",["Renginden","Şapkasından","Hiç bulunmaz"]),
+q("Kasırga’nın gücü ne zaman değerli olur?","Takımla birleşince",["Yalnız kalınca","Öfkeyle saldırınca","Planı bırakınca"]),
+q("Terlik kaçarken en doğru hamle nedir?","Çıkış yolunu kesmek",["Arkadan bağırmak","Geri dönmek","Saklanmak"]),
+q("Kasırga için zafer nedir?","Gücünü doğru amaçla kullanmak",["Yalnız kazanmak","Herkesi yenmek","Susmak"]),
+q("Kasırga ekipte ne sağlar?","Savaşçı güç",["Şifre ekranı","Tiftik","Ötüş"]),
+q("Hız ne zaman işe yarar?","Doğru anda kullanılırsa",["Her zaman koşarsa","Rastgele kaçarsa","Konuşursa"])
+],
+ustat:[
+q("Üstat hangi canlıdır?","Caretta caretta",["Kangal","Keçi","Horoz"]),
+q("İztuzu Plajı hangi ilimizdedir?","Muğla",["Sivas","Van","Denizli"],"tuana","Tuana: İztuzu, Muğla Dalyan bölgesiyle bilinir."),
+q("Üstat’ın gücü nedir?","Sabır ve analiz",["Hız","Ötüş","Tiftik"]),
+q("Şifreler nasıl çözülür?","Dikkatli okuyarak",["Rastgele tahminle","Kırarak","Koşarak"],"ustat","Üstat: Şifreler bağırana değil, sabredene açılır."),
+q("Üstat İstanbul’da nerede çalışır?","Yerebatan Sarnıcı",["Stadyum","Çiftlik","Dağ"]),
+q("Mentor ne yapar?","Yol gösterir",["Korkutur","Kaçar","Kandırır"]),
+q("Acele karar ne doğurur?","Hata",["Bilgelik","Bonus","Zafer"]),
+q("Üstat’ın dili nasıldır?","Özlü ve sakin",["Bağırgan","Kibirli","Sessiz"]),
+q("Çözüm için önce ne gerekir?","Doğru soruyu sormak",["Kaçmak","Saklamak","Kırmak"]),
+q("Caretta caretta neyle ilişkilidir?","Deniz kaplumbağası",["Dağ kedisi","Bozkır koyunu","Horoz"]),
+q("Asa gücü nasıl durdurulur?","Kaynağı anlaşılırsa",["Görmezden gelinirse","Saklanırsa","Alkışlanırsa"]),
+q("Üstat neden yardım eder?","Geleceğe inandığı için",["Ödül için","Korktuğu için","Terlik istediği için"]),
+q("En bilge karar hangisidir?","Önce dinle, sonra hareket et",["Hemen saldır","Şifreyi atla","Rastgele seç"]),
+q("Üstat’ın final öğüdü ne olur?","Takım akılla kazanır",["Güç tek başına yeter","Herkes ayrı gitsin","Terlik haklı"]),
+q("Bilgelik görevde ne sağlar?","Yanlışı ayırt etmeyi",["Görünmezliği","Uçmayı","Tiftik üretmeyi"])
+],
+sutlac:[
+q("Van Kedisi hangi özelliğiyle bilinir?","Farklı renk gözleri ve suya ilgisi",["Uzun ötüş","Tiftik","Sürü koruma"]),
+q("Van denince akla gelen büyük doğal unsur nedir?","Van Gölü",["Pamukkale","Sakarya Nehri","Erciyes"]),
+q("Sütlaç’ın uzmanlığı nedir?","Kilit açma ve çözüm üretme",["Ötme","Traktör sürme","Dağ pusu"]),
+q("Şifre için kimden yardım alınır?","Üstat",["Terlik","Turşu","Pişi"],"ustat","Üstat: Doğru şifre 8271."),
+q("Sütlaç’ın riski nedir?","Fazla risk almak",["Çok kuralcı olmak","Çok saf olmak","Uçamamak"]),
+q("Sütlaç görevde nasıldır?","Odaklı ve profesyonel",["Dağınık","Korkak","Uykucu"]),
+q("Kapı kilitliyse ilk hamle nedir?","Mekanizmayı incelemek",["Kırmak","Kaçmak","Bağırmak"]),
+q("Terlik’in mekanına nasıl girilir?","Kapı sistemi çözülerek",["Duvar boyayarak","Şarkı söyleyerek","Uyuyarak"]),
+q("Kilit üstündeki çizik ne gösterir?","Daha önce açılmış olabilir",["Yeni yapılmış","Önemsiz","Yenmiş"]),
+q("Van kedisi hangi davranışla bilinir?","Suya ilgi duyması",["Dağda avlanma","Uzun ötme","Tiftik üretme"]),
+q("Şifre ipucu 8271 ise doğru seçim nedir?","8271",["1234","0000","1453"],"ustat","Üstat: Doğru şifre 8271."),
+q("İki kapıdan hangisi gerçek olabilir?","Üzerinde eski iz olan",["Yeni boyalı olan","Parlak olan","Işık saçan"]),
+q("Sütlaç neden başarılı olur?","Detay gördüğü için",["Kaba güçle","Tesadüfle","Bağırarak"]),
+q("Finalde Sütlaç’ın kritik işi nedir?","Kilidi açmak",["Saklanmak","Kamyon sürmek","Ötmek"]),
+q("Sütlaç için zafer nedir?","Zekayla kapıyı açmak",["Sadece hızlı koşmak","Geri dönmek","Uyumak"])
+],
+cankus:[
+q("Cankuş’un görevi nedir?","Havadan istihbarat",["Kilit açmak","Traktör sürmek","Şifre yazmak"]),
+q("Kartalın avantajı nedir?","Keskin görüş",["Tiftik","Uzun ötüş","Suda yüzme"]),
+q("Anadolu kartalı hangi coğrafyayla ilişkilidir?","Anadolu’nun dağları ve bozkırları",["Sadece deniz altı","Sadece şehir merkezi","Sadece mağara"]),
+q("Terlik’in izini kim analiz eder?","Akıncan",["Turşu","Terlik","Hüsran"],"akincan","Akıncan: Kamera kayıtlarında doğru yol Orta yol."),
+q("Yerden görünmeyen şey nasıl bulunur?","Yukarıdan bakarak",["Göz kapatarak","Tahminle","Kaçarak"]),
+q("Cankuş neden gizli kahramandır?","Öne çıkmadan bilgi taşır",["Hiç yardım etmez","Terlik’e çalışır","Uyur"]),
+q("Kamyon konumu nereden anlaşılır?","Havadan rota takibiyle",["Şarkıdan","Kokudan","Tiftikten"]),
+q("Cankuş’un hızı ne sağlar?","Haberi çabuk ulaştırır",["Kapı açar","Şifre kırar","Tavuk toplar"]),
+q("Cankuş kime haber taşır?","Kangal’a",["Terlik’e","Turşu’ya","Kimseye"]),
+q("Gökyüzünden hangi bilgi alınır?","Rota ve kalabalık",["Şifre sesi","Kapı tadı","Tiftik kalitesi"]),
+q("Sahte iz nasıl anlaşılır?","Havadan rota tutarsız görünür",["Rengi parlak olur","Ses çıkarır","Yenir"],"akincan","Akıncan: Harita ile iz uyuşmuyorsa sahte izdir."),
+q("Cankuş’un bilgisi olmazsa ne olur?","Ekip kör kalır",["Her şey kolaylaşır","Terlik teslim olur","Görev biter"]),
+q("Doğru yön hangisi?","Orta yol",["Sol yol","Sağ yol","Tünel"],"akincan","Akıncan: Kamera orta yolu gösteriyor."),
+q("Yukarıdan izlerken acele edilirse ne olur?","Detay kaçabilir",["Skor artar","Kapı açılır","Pişi uçar"]),
+q("Cankuş’un final katkısı nedir?","Kaçış rotasını bildirmek",["Kapı kırmak","Şifre yemek","Traktör saklamak"])
+]
+};
+
+function shuffle(arr){return [...arr].sort(()=>Math.random()-0.5)}
+function pickFive(arr){return shuffle(arr).slice(0,5).map(x=>({...x,options:shuffle(x.options)}))}
+
+function go(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  updateStatsUI();
 }
 
-function selectChar(k){
-selectedChar=characters.find(x=>x.key===k);
-document.getElementById("charInfo").innerHTML=`
-<img class="result-img" src="images/${selectedChar.img}.png">
-<h2>${selectedChar.name}</h2>
-<p>${selectedChar.info}</p>`;
-go("charDetail");
+function renderCharacters(){
+  const grid=document.getElementById("characterGrid");
+  grid.innerHTML="";
+  characters.forEach(c=>{
+    grid.innerHTML+=`
+      <div class="card">
+        <div class="face">${imgTag(c.img)}</div>
+        <b>${c.name}</b>
+        <small>Güç: ${c.power}</small><br>
+        <button onclick="selectChar('${c.key}')">Seç</button>
+      </div>`;
+  });
+}
+
+function selectChar(key){
+  const c=characters.find(x=>x.key===key);
+  characterKey=c.key;
+  characterName=c.name;
+  imageName=c.img;
+  localStorage.setItem("lastCharacter",characterName);
+  infoOpen=false;
+  renderCharacterDetail();
+  go("characterDetail");
+}
+
+function renderCharacterDetail(){
+  const c=characters.find(x=>x.key===characterKey);
+  document.getElementById("characterDetailContent").innerHTML=`
+    <div class="face">${imgTag(c.img)}</div>
+    <h2>${c.name}</h2>
+    <p><b>Nereli:</b> ${c.origin}</p>
+    <p><b>Gücü:</b> ${c.power}</p>
+    <p><b>Rolü:</b> ${c.role}</p>
+    <div id="extraInfo" style="display:none">
+      <p>${c.name}, Efsaneler Takımı içinde kendi doğasından gelen gücüyle görev alır. Her oyun yeniden karışan görevlerde farklı kararlar vermen gerekir.</p>
+    </div>
+  `;
+}
+
+function toggleCharacterInfo(){
+  const el=document.getElementById("extraInfo");
+  el.style.display=el.style.display==="none"?"block":"none";
 }
 
 function startGame(){
-score=0;index=0;
-generateQuestions();
-nextQ();
-go("game");
+  score=0;
+  taskIndex=0;
+  answered=false;
+  mistakeShield=characterKey==="pisi";
+  if(characterKey==="firfir") score+=5;
+  currentTasks=pickFive(banks[characterKey]);
+  loadTask();
+  go("game");
 }
 
-function nextQ(){
-if(index>=5){finish();return;}
-time=20;
-let q=questions[index];
-document.getElementById("taskTitle").innerText=(index+1)+". Görev";
-document.getElementById("taskDesc").innerText=q.q;
-
-let opts=[q.a,...q.w].sort(()=>Math.random()-0.5);
-let box=document.getElementById("options");
-box.innerHTML="";
-opts.forEach(o=>{
-let b=document.createElement("button");
-b.innerText=o;
-b.onclick=()=>answer(o===q.a,b);
-box.appendChild(b);
-});
-
-clearInterval(timer);
-timer=setInterval(()=>{
-time--;
-document.getElementById("time").innerText=time;
-if(time<=0){next();}},1000);
+function powerText(){
+  const c=characters.find(x=>x.key===characterKey);
+  return "Özel güç aktif: "+c.power;
 }
 
-function answer(c,b){
-clearInterval(timer);
-if(c){score+=10;b.classList.add("correct-btn")}
-else b.classList.add("wrong-btn");
-setTimeout(next,700);
+function loadTask(){
+  clearInterval(timer);
+  answered=false;
+  time=20;
+  currentTask=currentTasks[taskIndex];
+
+  document.getElementById("powerText").innerText=powerText();
+  document.getElementById("taskTitle").innerText=(taskIndex+1)+". Görev";
+  document.getElementById("taskDesc").innerText=currentTask.desc;
+
+  renderHelp();
+  renderOptions();
+  updateUI();
+
+  timer=setInterval(()=>{
+    time--;
+    updateUI();
+    if(time<=0 && !answered){
+      showFeedback("Süre doldu!");
+      flash("wrong");
+      nextTask();
+    }
+  },1000);
 }
 
-function next(){index++;nextQ()}
+function renderHelp(){
+  const h=document.getElementById("helpArea");
+  h.innerHTML="";
+  if(!currentTask.helper) return;
 
-function finish(){
-document.getElementById("charRes").innerHTML=`
-<img class="result-img" src="images/${selectedChar.img}.png"><br>${selectedChar.name}`;
-document.getElementById("finalScore").innerText="Skor: "+score;
-go("result");
+  const labels={
+    ustat:"Üstat’tan yardım iste",
+    akincan:"Akıncan’dan yardım iste",
+    tuana:"Tuana’dan yardım iste"
+  };
+
+  const b=document.createElement("button");
+  b.className="help-btn";
+  b.innerText=labels[currentTask.helper];
+  b.onclick=()=>showHelper(currentTask.helper,currentTask.msg);
+  h.appendChild(b);
 }
 
-function restart(){go("landing")}
+function renderOptions(){
+  const box=document.getElementById("options");
+  box.innerHTML="";
+  currentTask.options.forEach(o=>{
+    const b=document.createElement("button");
+    b.innerText=o.text;
+    b.dataset.correct=o.correct;
+    b.onclick=()=>answer(o.correct,b);
+    box.appendChild(b);
+  });
+}
+
+function showHelper(type,msg){
+  const img={ustat:"ustat",akincan:"akincan",tuana:"tuana"}[type];
+  const name={ustat:"Üstat",akincan:"Akıncan",tuana:"Tuana"}[type];
+  document.getElementById("helperFace").innerHTML=imgTag(img);
+  document.getElementById("helperName").innerText=name;
+  document.getElementById("helperMessage").innerText=msg || "Dikkatli bak. Doğru cevap ipucunun içinde.";
+  document.getElementById("helperOverlay").style.display="flex";
+}
 
 function closeHelper(){
-document.getElementById("helperOverlay").style.display="none";
+  document.getElementById("helperOverlay").style.display="none";
 }
 
-renderChars();
+function answer(correct,btn){
+  if(answered) return;
+  answered=true;
+  clearInterval(timer);
+
+  document.querySelectorAll("#options button").forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.correct==="true") b.classList.add("correct-btn");
+  });
+
+  if(correct){
+    let point=10;
+    if(characterKey==="kasirga") point=15;
+    if(characterKey==="sutlac" && currentTask.desc.includes("şifre")) point=20;
+    if(characterKey==="ustat" && currentTask.helper==="ustat") point+=5;
+    if(characterKey==="cankus" && currentTask.helper==="akincan") point+=5;
+    score+=point;
+    flash("correct");
+    showFeedback("Doğru seçim!");
+  }else{
+    btn.classList.add("wrong-btn");
+    if(characterKey==="pisi" && mistakeShield){
+      mistakeShield=false;
+      score+=5;
+      flash("correct");
+      showFeedback("Pişi gücü: yanlış affedildi!");
+    }else{
+      if(characterKey==="simit") score=Math.max(0,score-2);
+      flash("wrong");
+      showFeedback("Yanlış seçim!");
+    }
+  }
+
+  updateUI();
+  setTimeout(nextTask,1100);
+}
+
+function nextTask(){
+  clearInterval(timer);
+  taskIndex++;
+  if(taskIndex>=currentTasks.length) finish();
+  else loadTask();
+}
+
+function updateUI(){
+  document.getElementById("time").innerText=time;
+  document.getElementById("score").innerText=score;
+}
+
+function flash(type){
+  document.body.classList.add(type==="correct"?"flash-correct":"flash-wrong");
+  setTimeout(()=>document.body.classList.remove("flash-correct","flash-wrong"),220);
+}
+
+function showFeedback(text){
+  const f=document.getElementById("feedback");
+  f.innerText=text;
+  f.classList.add("show");
+  setTimeout(()=>f.classList.remove("show"),900);
+}
+
+function finish(){
+  saveStats();
+
+  let badge="⚠️",title="Daha yolun var!",level="ÇAYLAK SEVİYE";
+  finalLevel="Çaylak";
+
+  if(score>=65){
+    badge="👑";title="Gerçek bir Efsanesin!";level="EFSANE SEVİYE";finalLevel="Efsane";
+  }else if(score>=40){
+    badge="🔥";title="Takımın liderisin!";level="LİDER SEVİYE";finalLevel="Lider";
+  }
+
+  const c=characters.find(x=>x.key===characterKey);
+
+  document.getElementById("badge").innerText=badge;
+  document.getElementById("resultText").innerText=title;
+  document.getElementById("charText").innerHTML=`${imgTag(imageName,"result-img")}<br><b>${characterName}</b>`;
+  document.getElementById("levelText").innerText=level;
+  document.getElementById("powerResult").innerText="Özel güç: "+c.power;
+  document.getElementById("finalScore").innerText="Skor: "+score;
+
+  renderLeaderboard();
+  go("result");
+}
+
+function saveStats(){
+  let playCount=parseInt(localStorage.getItem("playCount")||"0")+1;
+  let bestScore=parseInt(localStorage.getItem("bestScore")||"0");
+  if(score>bestScore) bestScore=score;
+  localStorage.setItem("playCount",playCount);
+  localStorage.setItem("bestScore",bestScore);
+  localStorage.setItem("lastCharacter",characterName);
+}
+
+function savePlayerScore(){
+  const name=document.getElementById("playerName").value.trim() || "İsimsiz Kahraman";
+  let board=JSON.parse(localStorage.getItem("leaderboard")||"[]");
+  board.push({name,score,character:characterName});
+  board.sort((a,b)=>b.score-a.score);
+  board=board.slice(0,10);
+  localStorage.setItem("leaderboard",JSON.stringify(board));
+  renderLeaderboard();
+  showFeedback("Skor kaydedildi!");
+}
+
+function renderLeaderboard(){
+  let board=JSON.parse(localStorage.getItem("leaderboard")||"[]");
+  let html="<h3>🏆 Sıralama</h3>";
+  if(!board.length) html+="<p>Henüz skor kaydı yok.</p>";
+  board.forEach((x,i)=>{
+    html+=`<div class="leader-row"><span>${i+1}. ${x.name} (${x.character})</span><b>${x.score}</b></div>`;
+  });
+  document.getElementById("leaderboard").innerHTML=html;
+}
+
+function showLeaderboardOnly(){
+  document.getElementById("badge").innerText="🎁";
+  document.getElementById("resultText").innerText="Ödül ve Sıralama";
+  document.getElementById("charText").innerHTML="";
+  document.getElementById("levelText").innerText="En yüksek puanı yapanlar ödül kazanır.";
+  document.getElementById("powerResult").innerText="";
+  document.getElementById("finalScore").innerText="";
+  renderLeaderboard();
+  go("result");
+}
+
+function updateStatsUI(){
+  const pc=localStorage.getItem("playCount")||"0";
+  const bs=localStorage.getItem("bestScore")||"0";
+  const lc=localStorage.getItem("lastCharacter")||"-";
+
+  document.getElementById("playCountLanding").innerText=pc;
+  document.getElementById("bestScoreLanding").innerText=bs;
+
+  if(document.getElementById("playCountResult")){
+    document.getElementById("playCountResult").innerText=pc;
+    document.getElementById("bestScoreResult").innerText=bs;
+    document.getElementById("lastCharacterResult").innerText=lc;
+  }
+}
+
+function restart(){
+  clearInterval(timer);
+  go("landing");
+}
+
+function share(){
+  const text="Ben Efsaneler Takımı’nda "+characterName+" oldum 🔥 Seviyem: "+finalLevel+" | Skorum: "+score+". Sen hangisisin?";
+  const url=window.location.href;
+  if(navigator.share){
+    navigator.share({title:"Efsaneler Takımı",text,url});
+  }else{
+    window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");
+  }
+}
+
+renderCharacters();
+updateStatsUI();
 </script>
 
 </body>
