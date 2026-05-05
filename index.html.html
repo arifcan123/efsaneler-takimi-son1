@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Efsaneler Takımı</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ color:white;
+ text-align:center;
+ min-height:100vh;
+ background:#000;
+}
+
+/* ISTANBUL BACKGROUND */
+.bg-istanbul{
+ position:fixed;
+ inset:0;
+ background:url("images/istanbul.png") center/cover no-repeat;
+ z-index:-2;
+}
+.bg-overlay{
+ position:fixed;
+ inset:0;
+ background:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,.9));
+ z-index:-1;
+}
+
+/* SCREEN */
+.screen{display:none;min-height:100vh;padding:24px}
+.active{display:flex;flex-direction:column;justify-content:center}
+
+/* BUTTON */
+button{
+ padding:14px 18px;
+ margin:10px;
+ border:none;
+ border-radius:16px;
+ font-size:15px;
+ font-weight:800;
+ background:#ffcc00;
+ color:#111;
+ cursor:pointer;
+}
+.dark-btn{background:#1f2538;color:white}
+
+/* CINEMATIC */
+.cinematic{
+ max-width:700px;
+ margin:auto;
+ padding:32px;
+ border-radius:30px;
+ background:rgba(0,0,0,.55);
+ backdrop-filter:blur(10px);
+ border:1px solid rgba(255,255,255,.1);
+}
+
+.warning{
+ color:#ffcc00;
+ font-weight:900;
+ letter-spacing:2px;
+ margin-bottom:10px;
+}
+
+h1{
+ font-size:38px;
+ margin:10px 0;
+}
+
+p{line-height:1.6}
+
+/* CHARACTER GRID */
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:14px;
+ max-width:700px;
+ margin:auto;
+}
+
+.card{
+ background:rgba(255,255,255,.08);
+ border-radius:22px;
+ padding:16px;
+}
+
+.face img{
+ width:90px;height:90px;border-radius:50%;
+}
+
+/* GAME */
+.topbar{
+ position:fixed;
+ top:0;left:0;right:0;
+ display:flex;
+ justify-content:space-between;
+ padding:12px;
+ background:rgba(0,0,0,.7);
+}
+
+.options button{
+ width:100%;
+ max-width:500px;
+ display:block;
+ margin:10px auto;
+}
+
+.correct-btn{background:#17c964!important}
+.wrong-btn{background:#ff4d4d!important}
+
+/* HELPER */
+.helper-overlay{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.8);
+ display:none;
+ align-items:center;
+ justify-content:center;
+}
+.helper-box{
+ background:#111;
+ padding:30px;
+ border-radius:20px;
+}
+.helper-box img{
+ width:120px;
+ height:120px;
+ border-radius:50%;
+}
+
+/* RESULT */
+.result-img{
+ width:110px;height:110px;border-radius:50%;
+}
+
+@media(max-width:430px){
+ .grid{grid-template-columns:1fr}
+ h1{font-size:28px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-istanbul"></div>
+<div class="bg-overlay"></div>
+
+<!-- LANDING -->
+<div id="landing" class="screen active">
+ <div class="cinematic">
+  <div class="warning">OPERASYON BAŞLIYOR</div>
+  <h1>EFSANELER TAKIMI</h1>
+  <p>
+   İstanbul’da tarihi eserler tehlikede.<br>
+   Terlik görünmezlik gücünü kullandı.<br>
+   Takım seni bekliyor.
+  </p>
+  <button onclick="go('character')">GÖREVE BAŞLA</button>
+ </div>
+</div>
+
+<!-- CHARACTER -->
+<div id="character" class="screen">
+ <h2>Karakterini Seç</h2>
+ <div id="grid" class="grid"></div>
+</div>
+
+<!-- CHARACTER DETAIL -->
+<div id="charDetail" class="screen">
+ <div class="cinematic">
+  <div id="charInfo"></div>
+  <button onclick="startGame()">OYUNA DEVAM ET</button>
+  <button class="dark-btn" onclick="go('character')">GERİ</button>
+ </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+ <div class="topbar">
+  <div>⏱ <span id="time">20</span></div>
+  <div>⭐ <span id="score">0</span></div>
+ </div>
+
+ <div class="cinematic">
+  <h2 id="taskTitle"></h2>
+  <p id="taskDesc"></p>
+  <div id="help"></div>
+  <div id="options" class="options"></div>
+ </div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="screen">
+ <div class="cinematic">
+  <h2>SONUÇ</h2>
+  <div id="charRes"></div>
+  <p id="finalScore"></p>
+
+  <h3>🎁 Ödüller</h3>
+  <p>1. Sinema bileti<br>2. Afiş<br>3. Karakter kartı</p>
+
+  <button onclick="restart()">TEKRAR OYNA</button>
+ </div>
+</div>
+
+<!-- HELPER -->
+<div id="helperOverlay" class="helper-overlay">
+ <div class="helper-box">
+  <img id="helperImg">
+  <p id="helperText"></p>
+  <button onclick="closeHelper()">KAPAT</button>
+ </div>
+</div>
+
+<script>
+const characters=[
+{key:"kangal",name:"Kangal",img:"kangal",info:"Sivaslı. Güçlü lider. Takımı korur."},
+{key:"pisi",name:"Pişi",img:"pisi",info:"Karamanlı. Saf ama sezgisel."},
+{key:"firfir",name:"Fırfır",img:"firfir",info:"Denizli. Disiplinli."},
+{key:"simit",name:"Simit",img:"simit",info:"Ankara. İnatçı."},
+{key:"kasirga",name:"Kasırga",img:"kasirga",info:"Erzurum. Sessiz avcı."},
+{key:"ustat",name:"Üstat",img:"ustat",info:"Bilge lider."},
+{key:"sutlac",name:"Sütlaç",img:"sutlac",info:"Van kedisi."},
+{key:"cankus",name:"Cankuş",img:"cankus",info:"Kartal. Gözlemci."}
+];
+
+let selectedChar;
+let score=0,time=20,timer,questions=[],index=0;
+
+/* BASİT RANDOM SORU */
+function generateQuestions(){
+let base=[
+{q:"Doğru karar?",a:"Plan yapmak",w:["Kaçmak","Bağırmak","Beklemek"]},
+{q:"En iyi hamle?",a:"Takımla hareket",w:["Tek başına","Kaç","Saklan"]},
+{q:"Hangi yol?",a:"Orta yol",w:["Sol","Sağ","Tünel"]},
+{q:"Tehlike?",a:"İz takip",w:["Görmezden gel","Koş","Uy"]},
+{q:"Şifre?",a:"8271",w:["1234","0000","1453"]}
+];
+
+questions=[...base].sort(()=>Math.random()-0.5);
+}
+
+/* UI */
+function go(s){
+document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+document.getElementById(s).classList.add("active");
+}
+
+function renderChars(){
+let g=document.getElementById("grid");
+characters.forEach(c=>{
+g.innerHTML+=`
+<div class="card">
+<img src="images/${c.img}.png">
+<b>${c.name}</b>
+<button onclick="selectChar('${c.key}')">Seç</button>
+</div>`;
+});
+}
+
+function selectChar(k){
+selectedChar=characters.find(x=>x.key===k);
+document.getElementById("charInfo").innerHTML=`
+<img class="result-img" src="images/${selectedChar.img}.png">
+<h2>${selectedChar.name}</h2>
+<p>${selectedChar.info}</p>`;
+go("charDetail");
+}
+
+function startGame(){
+score=0;index=0;
+generateQuestions();
+nextQ();
+go("game");
+}
+
+function nextQ(){
+if(index>=5){finish();return;}
+time=20;
+let q=questions[index];
+document.getElementById("taskTitle").innerText=(index+1)+". Görev";
+document.getElementById("taskDesc").innerText=q.q;
+
+let opts=[q.a,...q.w].sort(()=>Math.random()-0.5);
+let box=document.getElementById("options");
+box.innerHTML="";
+opts.forEach(o=>{
+let b=document.createElement("button");
+b.innerText=o;
+b.onclick=()=>answer(o===q.a,b);
+box.appendChild(b);
+});
+
+clearInterval(timer);
+timer=setInterval(()=>{
+time--;
+document.getElementById("time").innerText=time;
+if(time<=0){next();}},1000);
+}
+
+function answer(c,b){
+clearInterval(timer);
+if(c){score+=10;b.classList.add("correct-btn")}
+else b.classList.add("wrong-btn");
+setTimeout(next,700);
+}
+
+function next(){index++;nextQ()}
+
+function finish(){
+document.getElementById("charRes").innerHTML=`
+<img class="result-img" src="images/${selectedChar.img}.png"><br>${selectedChar.name}`;
+document.getElementById("finalScore").innerText="Skor: "+score;
+go("result");
+}
+
+function restart(){go("landing")}
+
+function closeHelper(){
+document.getElementById("helperOverlay").style.display="none";
+}
+
+renderChars();
+</script>
+
+</body>
+</html>
